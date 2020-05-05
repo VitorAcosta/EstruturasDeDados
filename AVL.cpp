@@ -3,6 +3,7 @@
 using namespace std;
 
 //Author: Vitor Acosta da Rosa
+//        Rubens Mendes
 
 class No
 {
@@ -47,7 +48,7 @@ private:
     pai = encontrado->pai; //Encontra o pai do nó atual;
     if (encontrado->fEsq == NULL && encontrado->fDir == NULL){ //Primeiro caso: exclusão de uma folha (um nó sem filhos)
       if(pai){
-        if (pai->valor > encontrado->valor) //Se o valor do pai é maior que o valor a ser deletado, quer dizer que o nó
+        if (pai->valor >= encontrado->valor) //Se o valor do pai é maior que o valor a ser deletado, quer dizer que o nó
             pai->fEsq = NULL;     //a ser deletado está à esquerda
         else
             pai->fDir = NULL;
@@ -81,13 +82,19 @@ private:
 
         //Se remove um nó intermediário deve-se refazer a ligação entre o pai do nó excluido com o nó filho do atual.
         filho->pai = pai;
-        if (pai->valor > encontrado->valor)
+        if (pai->valor >= encontrado->valor)
           pai->fEsq = filho;
         else
           pai->fDir = filho;
       }
+
       delete encontrado;
       qntElementos--;
+      while(pai){ //Update de altura para todos nós da árvore.
+        pai->altura = altura(pai);
+        balanceamento(pai);
+        pai = pai->pai; //Acessa o nó avô (se existir) percorrendo os ancestrais do novo nó.
+      }
       return true;
   }
 
@@ -120,12 +127,12 @@ private:
    */
   void balanceamento(No* n){
     int fb = fatorBalanceamento(n);
-    if(fb > 1 && fatorBalanceamento(n->fDir) > 0){
+    if(fb > 1 && (fatorBalanceamento(n->fDir) > 0)){
       cout<<"--->Left Rotate iniciado"<<endl;
       leftRotate(n, true);
       cout<<"--->Left Rotate finalizado"<<endl;
     }
-    else if(fb < -1 && fatorBalanceamento(n->fEsq) < 0){
+    else if(fb < -1 && (fatorBalanceamento(n->fEsq) < 0)){
       cout<<"--->right Rotate iniciado"<<endl;
       rightRotate(n, true);
       cout<<"--->right Rotate finalizado"<<endl;
@@ -136,8 +143,9 @@ private:
       print2D();
       leftRotate(n->fEsq, false);
       print2D();
+      rightRotate(n,false);
       cout<<"--->Left Right Rotate finalizado\n"<<endl;
-      balanceamento(n);
+      
     }
     //Rotação à direita depois esquerda
     else if(fb > 1 && (fatorBalanceamento(n->fDir) < 0)){
@@ -145,8 +153,8 @@ private:
       print2D();
       rightRotate(n->fDir, false);
       print2D();
+      leftRotate(n, false);
       cout<<"--->Right Left Rotate finalizado\n"<<endl;
-      balanceamento(n);
     }
   }
 
@@ -239,7 +247,6 @@ public:
   {
     No *pai = NULL;   //Um ponteiro para o pai do nó atual (para manter a relação)
     No *atual = raiz; //Nó atual da árvore, partindo sempre da raiz.
-    No* avo; //Nó avô, utilizado para percorrer todos ancestrais do novo nó.
     No *novo = new No;
     novo->valor = valor; //inicia o novo nó com o valor dado para a inserção
 
@@ -385,8 +392,10 @@ public:
       a.insere (79);
       a.insere (14);
       a.insere (55);
-      //a.remove (100);
-      //a.remove (99);
+      a.print2D();
+      a.removeNos (100);
+      a.print2D();
+      a.removeNos (99);
       a.print2D();
     }
     return 0;
