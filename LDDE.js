@@ -5,7 +5,6 @@ class No{
     this.anterior = null;
   }
 }
-
 class LDDE{
   constructor(){
     this.primeiro = null;
@@ -78,6 +77,23 @@ class LDDE{
     this.n--;
     return [true,'Valor removido com sucesso'];
   }
+  
+  /**
+   * Método inserido para ser compatível o tipo de retorno
+   * para a simulação com o React Native.
+   * Basicamente, transforma a estrutura ligada por ponteiros em um vetor.
+   * Dessa forma, no clientSide é possível aplicar o .map
+   * nesse vetor, possibilitando a simulação.
+   */
+  tranformaArray(){
+    let temp = this.primeiro;
+    let array = [];
+    for(let i = 0; i < this.n; i++){
+      array.push(temp.valor);
+      temp = temp.proximo;
+    }
+    return array;
+  }
 
   imprime(){
     let temp = this.primeiro;
@@ -88,3 +104,13 @@ class LDDE{
     console.log("\n");
   }
 }
+lista = new LDDE();
+ lista.insere(1);
+    lista.imprime();
+    lista.insere(5);
+    lista.imprime();
+    lista.insere(10);
+    lista.imprime();
+    lista.insere(7);
+    lista.imprime();
+    console.log(lista.tranformaArray());
